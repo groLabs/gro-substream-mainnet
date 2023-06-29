@@ -2,9 +2,10 @@ mod abi;
 mod pb;
 use hex_literal::hex;
 use pb::eth::erc721::v1 as erc721;
+use pb::acme::block_meta::v1::BlockMeta;
 use substreams::prelude::*;
-use substreams::{log, store::StoreAddInt64, Hex};
-use substreams_ethereum::{pb::eth::v2 as eth, NULL_ADDRESS};
+use substreams::{ log, store::StoreAddInt64, Hex };
+use substreams_ethereum::{ pb::eth::v2 as eth, NULL_ADDRESS };
 
 // Bored Ape Club Contract
 const TRACKED_CONTRACT: [u8; 20] = hex!("bc4ca0eda7647a8ab7c2061c2e118a18a936f13d");
@@ -29,6 +30,18 @@ fn map_transfers(blk: eth::Block) -> Result<erc721::Transfers, substreams::error
                 }
             })
             .collect(),
+    })
+}
+
+#[substreams::handlers::map]
+fn map_block(block: eth::Block) -> Result<BlockMeta, substreams::errors::Error> {
+    let header = block.header.as_ref().unwrap();
+
+    Ok(BlockMeta {
+        number: block.number,
+        hash: Hex(&block.hash).to_string(),
+        parent_hash: Hex(&header.parent_hash).to_string(),
+        timestamp: header.timestamp.as_ref().unwrap().to_string(),
     })
 }
 

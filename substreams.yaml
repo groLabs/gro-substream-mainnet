@@ -6,6 +6,7 @@ package:
 protobuf:
   files:
     - erc721.proto
+    - block_meta.proto
   importPaths:
     - ./proto
 
@@ -14,10 +15,18 @@ binaries:
     type: wasm/rust-v1
     file: ./target/wasm32-unknown-unknown/release/substreams.wasm
 
+# official naming convention for Substream modules: use `map_*` or `store_*`
 modules:
+  - name: map_block
+    kind: map
+    inputs:
+      - source: sf.ethereum.type.v2.Block # all networks retrieve data from Block. Eg: sf.solana.type.v1.Block
+    output:
+      type: proto:acme.block_meta.v1.BlockMeta
+
   - name: map_transfers
     kind: map
-    initialBlock: 12287507
+    initialBlock: 16000000
     inputs:
       - source: sf.ethereum.type.v2.Block
     output:
@@ -25,7 +34,7 @@ modules:
 
   - name: store_transfers
     kind: store
-    initialBlock: 12287507
+    initialBlock: 16000000
     updatePolicy: add
     valueType: int64
     inputs:

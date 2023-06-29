@@ -796,7 +796,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "substreams-template"
+name = "substreams-s3rGi"
 version = "0.1.0"
 dependencies = [
  "anyhow",
